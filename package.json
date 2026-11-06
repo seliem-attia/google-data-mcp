@@ -1,0 +1,50 @@
+{
+  "name": "google-data-mcp",
+  "version": "0.6.0",
+  "description": "MCP server for Google Analytics 4 (Data + Admin API) and Google Tag Manager — read and write, with automatic backups, GTM code validation and preview-before-publish.",
+  "license": "MIT",
+  "author": "Seliem Attia",
+  "type": "module",
+  "bin": {
+    "google-data-mcp": "index.mjs"
+  },
+  "files": [
+    "index.mjs",
+    "gtm-validate.mjs",
+    "scripts/oauth-capture.mjs",
+    "README.md",
+    "LICENSE",
+    ".env.example"
+  ],
+  "scripts": {
+    "start": "node index.mjs",
+    "selftest": "node index.mjs --selftest",
+    "auth": "node scripts/oauth-capture.mjs",
+    "test": "node test/run.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.32.1",
+    "acorn": "^8.19.0",
+    "zod": "^4.4.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/seliem-attia/google-data-mcp.git"
+  },
+  "homepage": "https://github.com/seliem-attia/google-data-mcp#readme",
+  "bugs": {
+    "url": "https://github.com/seliem-attia/google-data-mcp/issues"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "google-analytics",
+    "ga4",
+    "google-tag-manager",
+    "gtm",
+    "claude"
+  ]
+}
