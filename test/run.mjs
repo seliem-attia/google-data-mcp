@@ -80,6 +80,8 @@ x = await call("ga4_run_funnel_report", {
   breakdownDimension: "deviceCategory",
 });
 check("funnel: rows formatted", x.data.rows?.[0]?.funnelStepName === "1. LP" && x.data.rows[0].activeUsers === "100");
+x = await call("ga4_run_funnel_report", { property: "1", steps: [{ name: "LP", eventName: "page_view" }, { name: "Lead", eventName: "generate_lead" }, { name: "Call", eventName: "call" }] });
+check("funnel: empty step reported", JSON.stringify(x.data.stepsWithoutUsers) === JSON.stringify(["3. Call"]), JSON.stringify(x.data.stepsWithoutUsers));
 check("funnel: v1alpha endpoint", x.calls.some((c) => c.startsWith("POST /v1alpha/properties/1:runFunnelReport")));
 x = await call("ga4_run_funnel_report", { property: "1", steps: [{ name: "kaputt" }] });
 check("funnel: step without eventName → error", x.r.isError === true && /eventName/.test(x.text));

@@ -47,7 +47,7 @@ function parseEnvFile(path) {
   return out;
 }
 
-const VERSION = "0.6.0";
+const VERSION = "0.6.1";
 const READONLY_MODE = /^(1|true|yes)$/i.test(process.env.GOOGLE_DATA_MCP_READONLY || "");
 
 // Prefers the write token; in READONLY mode always uses the read-only token.
@@ -290,7 +290,8 @@ function formatGa4(j) {
     (r.metricValues || []).forEach((v, i) => (o[metHeaders[i]] = v.value));
     return o;
   });
-  return { rowCount: j.rowCount ?? rows.length, dimensions: dimHeaders, metrics: metHeaders, rows };
+  // Funnel sub reports can repeat headers; list each name once (row values are keyed by name anyway).
+  return { rowCount: j.rowCount ?? rows.length, dimensions: [...new Set(dimHeaders)], metrics: [...new Set(metHeaders)], rows };
 }
 
 async function ga4RunReport({
@@ -951,7 +952,15 @@ async function ga4RunFunnelReport({
   if (limit) body.limit = String(limit);
   const j = await googlePost(`${DATA_ALPHA}/${propPath(property)}:runFunnelReport`, body);
   const t = j.funnelTable || {};
-  return { ...formatGa4(t), ...(t.metadata?.samplingMetadatas ? { sampling: t.metadata.samplingMetadatas } : {}) };
+  const out = formatGa4(t);
+  // GA4 omits steps no user reached. Name them, so a missing row is not mistaken for an error.
+  const seen = new Set(out.rows.map((r) => r.funnelStepName));
+  const stepsWithoutUsers = steps.map((s, i) => `${i + 1}. ${s.name}`).filter((n) => !seen.has(n));
+  return {
+    ...out,
+    ...(stepsWithoutUsers.length ? { stepsWithoutUsers, note: "GA4 returns no row for steps that no user reached (0 users)." } : {}),
+    ...(t.metadata?.samplingMetadatas ? { sampling: t.metadata.samplingMetadatas } : {}),
+  };
 }
 
 // ── GA4 annotations (reporting data annotations, v1alpha) ───────────────────

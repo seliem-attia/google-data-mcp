@@ -1,6 +1,6 @@
 {
   "name": "google-data-mcp",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "MCP server for Google Analytics 4 (Data + Admin API) and Google Tag Manager — read and write, with automatic backups, GTM code validation and preview-before-publish.",
   "license": "MIT",
   "author": "Seliem Attia",
